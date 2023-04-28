@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html" charset="UTF-8" />
+    <title>Spotify2Instagram</title>
+
+    <script src="./axios.js"></script>
+    <script src="./html2canvas.js"></script>
+    <link href="./style.css" rel="stylesheet" />
+  </head>
+  <body>
+    <main class="container">
+      <section id="datas">
+        <div id="userdata" style="display: none">
+          <h1>User data</h1>
+          <h2>You are signined as <span id="username"></span></h2>
+        </div>
+        <div id="playdata" style="display: none">
+          <h1>Playing data</h1>
+          <h2 id="notPlaying">You are currently playing nothing!</h2>
+          <div id="musicdataContainer" style="display: none">
+            <div id="musicdata">
+              <img id="cover" alt="cover image" />
+              <div id="musictextinfo">
+                <h2 id="title">Loading</h2>
+                <span id="artistContainer">
+                  By
+                  <span id="artist">Loading</span>
+                </span>
+              </div>
+              <div id="musicController">
+                <div id="slider">
+                  <div id="sliderEnabled"></div>
+                  <span id="sliderNow"></span>
+                </div>
+                <img src="./layer.png" id="control" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script src="./index.js"></script>
+  </body>
+</html>

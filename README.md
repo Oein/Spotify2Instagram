@@ -23,3 +23,7 @@ cd Spotify2Instagram
 npm install
 npx electron-builder
 ```
+
+# Where to get Spotify Client ID and Secret
+
+Spotify developer dashboard is on [https://developer.spotify.com/dashboard](https://developer.spotify.com/dashboard)

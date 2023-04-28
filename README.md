@@ -28,6 +28,9 @@ npx electron-builder
 
 Spotify developer dashboard is on [https://developer.spotify.com/dashboard](https://developer.spotify.com/dashboard)
 
+Your spotify application's website will be `sptoinsta://main`
+Your spotify application's redirect URI will be `sptoinsta://oauth`
+
 # Example env
 
 ```env

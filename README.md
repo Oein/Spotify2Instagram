@@ -27,3 +27,12 @@ npx electron-builder
 # Where to get Spotify Client ID and Secret
 
 Spotify developer dashboard is on [https://developer.spotify.com/dashboard](https://developer.spotify.com/dashboard)
+
+# Example env
+
+```env
+IG_USERNAME="Spotify2InstagramUser"
+IG_PASSWORD="HardestP@ssW0rdInTheWorld"
+SP_CLIENT_ID="abcdefghijklmnopqrstuvwxyz1234567890"
+SP_SECRET_KEY="0987654321bcdefghijklmnopqrstuv1234"
+```

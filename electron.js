@@ -118,8 +118,6 @@ async function login() {
 const createWindow = async () => {
   await login();
   let win = new BrowserWindow({
-    minWidth: 460,
-    minHeight: 750,
     width: 460,
     height: 750,
     webPreferences: {

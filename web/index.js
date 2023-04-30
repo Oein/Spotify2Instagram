@@ -2,6 +2,9 @@ var authWindow = null;
 var token = null;
 var lastMusicURL = null;
 var lastTokenGenerated = null;
+var playdatawin = null;
+
+var lastData = null;
 
 function loadXHR(url) {
   return new Promise(function (resolve, reject) {
@@ -61,6 +64,18 @@ function fetchWhatIsPlaying() {
 
       document.getElementById("title").innerText = name;
       document.getElementById("artist").innerText = author;
+
+      lastData = JSON.stringify({
+        n: name,
+        a: author,
+        i: data["item"]["album"]["images"][0]["url"],
+        p:
+          (parseInt(data["progress_ms"]) /
+            parseInt(data["item"]["duration_ms"])) *
+          100,
+      });
+
+      if (playdatawin) playdatawin.postMessage(lastData);
 
       loadXHR(data["item"]["album"]["images"][0]["url"]).then((blob) => {
         let blobUrl = window.URL.createObjectURL(blob);
@@ -157,3 +172,14 @@ setInterval(() => {
     `${Math.random() * 80 + 10}%`
   );
 }, 5000);
+
+function givePlayData() {
+  if (playdatawin && lastData != null) playdatawin.postMessage(lastData);
+}
+
+document.getElementById("openwin").addEventListener("click", () => {
+  playdatawin = window.open("./playdata.html", "playdata");
+  playdatawin.addEventListener("close", () => {
+    playdatawin = null;
+  });
+});

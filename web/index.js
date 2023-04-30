@@ -182,4 +182,5 @@ document.getElementById("openwin").addEventListener("click", () => {
   playdatawin.addEventListener("close", () => {
     playdatawin = null;
   });
+  window.ipcRenderer.invoke("focus");
 });

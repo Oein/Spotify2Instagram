@@ -83,6 +83,7 @@ const openErrWin = (title, text) => {
     let win = new BrowserWindow({
       width: 400,
       height: 200,
+      title: "Error Window",
     });
 
     win.loadFile("web/error.html");
@@ -123,6 +124,7 @@ const createWindow = async () => {
     webPreferences: {
       preload: join(__dirname, "preload.js"),
     },
+    title: "Main window",
   });
   var set = {
     client_id: process.env.SP_CLIENT_ID,
@@ -264,4 +266,13 @@ app.whenReady().then(async () => {
   if (shownErr.title.length || shownErr.text.length)
     await openErrWin(shownErr.title, shownErr.text);
   createWindow();
+  ipcMain.handle("focus", () => {
+    BrowserWindow.getAllWindows()
+      .filter(
+        (win) =>
+          win.webContents.getTitle() == "Play data viewer" ||
+          win.webContents.getTitle() == ""
+      )[0]
+      .focus();
+  });
 });

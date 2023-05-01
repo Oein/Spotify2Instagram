@@ -21,6 +21,7 @@ git clone https://github.com/Oein/Spotify2Instagram.git
 cd Spotify2Instagram
 
 npm install
+npm run build
 npx electron-builder
 ```
 

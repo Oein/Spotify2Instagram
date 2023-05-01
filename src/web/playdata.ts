@@ -1,14 +1,13 @@
 window.addEventListener(
   "message",
   (event) => {
-    console.log(event.data);
-    let dt = JSON.parse(event.data);
+    let dt = event.data;
     let n = dt["n"];
     let a = dt["a"];
     let i = dt["i"];
-    document.getElementById("title").innerText = n;
-    document.getElementById("artist").innerText = a;
-    document.getElementById("cover").src = i;
+    (document.getElementById("title") as HTMLHeadingElement).innerText = n;
+    (document.getElementById("artist") as HTMLSpanElement).innerText = a;
+    (document.getElementById("cover") as HTMLImageElement).src = i;
     document.documentElement.style.setProperty("--percent", `${dt["p"]}%`);
   },
   false

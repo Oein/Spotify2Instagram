@@ -1,17 +1,17 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
-const { join } = require("path");
-const {
+import { app, BrowserWindow, ipcMain } from "electron";
+import { join } from "path";
+import {
   existsSync,
   writeFileSync,
   mkdirSync,
   readFileSync,
   readFile,
   rmSync,
-} = require("fs");
-const { IgApiClient } = require("instagram-private-api");
-const { promisify } = require("util");
+} from "fs";
+import { IgApiClient } from "instagram-private-api";
+import { promisify } from "util";
 
-const axios = require("axios");
+import axios from "axios";
 const readFileAsync = promisify(readFile);
 
 const appData = join(app.getPath("userData"));
@@ -70,15 +70,15 @@ if (!process.env.SP_SECRET_KEY)
     text: `Env "SP_SECRET_KEY" is empty\nEnv Path : ${config}`,
   };
 
-const writeErr = (err) => {
+const writeErr = (err: Error | string) => {
   writeFileSync(
     join(errDir, new Date().getTime().toString() + ".error.txt"),
     `========== ${new Date().toString()} ==========\n${err}`
   );
-  shownErr("Nodejs Error", err.toString());
+  openErrWin("Nodejs Error", err.toString());
 };
 
-const openErrWin = (title, text) => {
+const openErrWin = (title: string, text: string) => {
   return new Promise(() => {
     let win = new BrowserWindow({
       width: 400,
@@ -86,7 +86,7 @@ const openErrWin = (title, text) => {
       title: "Error Window",
     });
 
-    win.loadFile("web/error.html");
+    win.loadFile("static/error.html");
     win.webContents.addListener("dom-ready", () => {
       win.webContents.executeJavaScript(
         `al(${JSON.stringify(title)}, ${JSON.stringify(text)})`
@@ -101,16 +101,21 @@ const openErrWin = (title, text) => {
 const ig = new IgApiClient();
 const serverAuth =
   "Basic " +
-  new Buffer.from(
-    process.env.SP_CLIENT_ID + ":" + process.env.SP_SECRET_KEY
+  new (Buffer as any).from(
+    ((process.env.SP_CLIENT_ID! as string) +
+      ":" +
+      (process.env.SP_SECRET_KEY! as string)) as any
   ).toString("base64");
 
 async function login() {
   // basic login-procedure
   try {
-    ig.state.generateDevice(process.env.IG_USERNAME);
-    await ig.account.login(process.env.IG_USERNAME, process.env.IG_PASSWORD);
-  } catch (err) {
+    ig.state.generateDevice(process.env.IG_USERNAME! as string);
+    await ig.account.login(
+      process.env.IG_USERNAME! as string,
+      process.env.IG_PASSWORD! as string
+    );
+  } catch (err: any) {
     writeErr(err);
     await openErrWin("Instagram Error", "Failed to signin.");
   }
@@ -140,7 +145,7 @@ const createWindow = async () => {
   var code = "";
   var refresh = "";
 
-  win.webContents.on("will-navigate", function (event, newUrl) {
+  win.webContents.on("will-navigate", function (event: any, newUrl: string) {
     event.preventDefault();
     code = newUrl.replace(`sptoinsta://oauth/?code=`, "");
 
@@ -162,7 +167,7 @@ const createWindow = async () => {
         token = v.data.access_token;
         refresh = v.data.refresh_token;
 
-        win.loadFile("web/index.html");
+        win.loadFile("static/index.html");
         win.webContents.addListener("dom-ready", () => {
           win.webContents.executeJavaScript('handleAuth("' + token + '")');
           win.webContents.executeJavaScript(
@@ -189,7 +194,7 @@ const createWindow = async () => {
 
     console.log("Add cache to", `"${furl}"`);
     if (exsi) {
-      let oldData = parseInt(readFileSync(furl));
+      let oldData = parseInt(readFileSync(furl).toString());
       console.log(oldData, count2upload, oldData == count2upload);
       if (oldData == count2upload) {
         console.log("Upload to instgram");
@@ -251,7 +256,7 @@ const createWindow = async () => {
   });
 };
 
-function urlEncodeSet(set) {
+function urlEncodeSet(set: any) {
   var comps = [];
   for (var i in set) {
     if (set.hasOwnProperty(i)) {

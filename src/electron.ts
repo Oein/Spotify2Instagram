@@ -31,10 +31,12 @@ if (!existsSync(listenTime)) mkdirSync(listenTime, { recursive: true });
 if (!existsSync(config))
   writeFileSync(
     config,
-    `IG_USERNAME=""
-IG_PASSWORD=""
-SP_CLIENT_ID=""
-SP_SECRET_KEY=""`
+    [
+      `IG_USERNAME=""`,
+      `IG_PASSWORD=""`,
+      `SP_CLIENT_ID=""`,
+      `SP_SECRET_KEY=""`,
+    ].join("\n")
   );
 
 let shownErr = {
@@ -67,13 +69,13 @@ if (!process.env.SP_CLIENT_ID)
 if (!process.env.SP_SECRET_KEY)
   shownErr = {
     title: "Env error",
-    text: `Env "SP_SECRET_KEY" is empty\nEnv Path : ${config}`,
+    text: [`Env "SP_SECRET_KEY" is empty`, `Env Path : ${config}`].join("\n"),
   };
 
 const writeErr = (err: Error | string) => {
   writeFileSync(
     join(errDir, new Date().getTime().toString() + ".error.txt"),
-    `========== ${new Date().toString()} ==========\n${err}`
+    [`========== ${new Date().toString()} ==========`, `${err}`].join("\n")
   );
   openErrWin("Nodejs Error", err.toString());
 };

@@ -22,7 +22,7 @@ cd Spotify2Instagram
 
 npm install
 npm run build
-npx electron-builder
+npm run release
 ```
 
 # Where to get Spotify Client ID and Secret

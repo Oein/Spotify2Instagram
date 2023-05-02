@@ -1,36 +1,25 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import { join } from "path";
-import {
-  existsSync,
-  writeFileSync,
-  mkdirSync,
-  readFileSync,
-  readFile,
-  rmSync,
-} from "fs";
+import { existsSync, writeFileSync, mkdirSync, readFile, rmSync } from "fs";
 import { IgApiClient } from "instagram-private-api";
 import { promisify } from "util";
-
+import { addListenCount, getImgURL } from "./music";
 import axios from "axios";
+
 const readFileAsync = promisify(readFile);
 
 const appData = join(app.getPath("userData"));
-const imgDir = join(appData, "imgs");
 const errDir = join(appData, "errors");
 const config = join(appData, "config.env");
-const listenTime = join(appData, "listens");
 
 let token = "";
 let code = "";
 let refresh = "";
 
-console.log("IMG DIR", imgDir);
 console.log("ERR DIR", errDir);
 console.log("CONFIG", config);
 
-if (!existsSync(imgDir)) mkdirSync(imgDir, { recursive: true });
 if (!existsSync(errDir)) mkdirSync(errDir, { recursive: true });
-if (!existsSync(listenTime)) mkdirSync(listenTime, { recursive: true });
 
 if (!existsSync(config))
   writeFileSync(
@@ -262,54 +251,39 @@ app.whenReady().then(async () => {
   });
   ipcMain.handle("music", async (e, data) => {
     const { img, url, tit, aut } = data;
-    const b64 = Buffer.from(encodeURIComponent(url), "base64").toString(
-      "base64"
-    );
-    const furl = join(listenTime, b64);
-    const iurl = join(imgDir, b64 + ".jpg");
-    const exsi = existsSync(furl);
-    const iexi = existsSync(iurl);
-    const count2upload = 5;
 
-    console.log("Add cache to", `"${furl}"`);
-    if (exsi) {
-      let oldData = parseInt(readFileSync(furl).toString());
-      console.log(oldData, count2upload, oldData == count2upload);
-      if (oldData == count2upload) {
-        console.log("Upload to instgram");
-        ig.publish
-          .photo({
-            file: await readFileAsync(iurl),
-            caption: `Listen "${tit}" by "${aut}" on ${url}`,
-          })
-          .then(() => {
-            rmSync(iurl);
-            if (win != null)
-              win.webContents.executeJavaScript(
-                `alertToTheBottom("Successfully uploaded to instagram.",4000)`
-              );
-          })
-          .catch((err) => {
-            writeErr(err);
-            if (win != null)
-              win.webContents.executeJavaScript(
-                `alertToTheBottom("Failed to upload to instagram.",4000)`
-              );
-          });
-      }
-      oldData += 1;
-      writeFileSync(furl, oldData.toString());
-      return;
-    } else {
-      writeFileSync(furl, "1");
-      if (!iexi) {
-        console.log("Write img to", `"${iurl}"`);
-        writeFileSync(
-          iurl,
-          img.replace(/^data:image\/jpeg;base64,/, ""),
-          "base64"
-        );
-      }
+    const iurl = getImgURL(url);
+    const iexi = existsSync(iurl);
+
+    if (!iexi) {
+      console.log("Write img to", `"${iurl}"`);
+      writeFileSync(
+        iurl,
+        img.replace(/^data:image\/jpeg;base64,/, ""),
+        "base64"
+      );
+    }
+
+    if (addListenCount(url)) {
+      ig.publish
+        .photo({
+          file: await readFileAsync(iurl),
+          caption: `Listen "${tit}" by "${aut}" on ${url}`,
+        })
+        .then(() => {
+          rmSync(iurl);
+          if (win != null)
+            win.webContents.executeJavaScript(
+              `alertToTheBottom("Successfully uploaded to instagram.",4000)`
+            );
+        })
+        .catch((err) => {
+          writeErr(err);
+          if (win != null)
+            win.webContents.executeJavaScript(
+              `alertToTheBottom("Failed to upload to instagram.",4000)`
+            );
+        });
     }
   });
   ipcMain.handle("err", (e, err) => {

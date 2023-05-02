@@ -44,4 +44,8 @@ const images = () =>
     .pipe(imagemin())
     .pipe(gulp.dest("./build/static/resources"));
 
+export const type = gulp.series([typescript]);
+export const css = gulp.series([styles]);
+export const html = gulp.series([htmls]);
+export const img = gulp.series([images]);
 export const build = gulp.series([typescript, styles, htmls, images]);

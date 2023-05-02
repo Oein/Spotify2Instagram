@@ -10,6 +10,7 @@ Mac : ~/Library/Application Support/Spotify2Instagram
 
 ```
 Listen count : Appdata/listens
+Images cache : Appdata/imgs
 Error logs : Appdata/errors
 Config file : Appdata/config.env
 ```
@@ -31,6 +32,11 @@ Spotify developer dashboard is on [https://developer.spotify.com/dashboard](http
 
 - Your spotify application's website will be `sptoinsta://main`
 - Your spotify application's redirect URI will be `sptoinsta://oauth`
+
+# How to upgrade from `Top listens` not supported versions
+
+1. Replace `https3A2F2Fopenspotifycom2F` to `` in all files' names in your **Listen count** Directory
+2. Replace `https3A2F2Fopenspotifycom2F` to `` in all files' names in your **Images cache** Directory
 
 # Example env
 

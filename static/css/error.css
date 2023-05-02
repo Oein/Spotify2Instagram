@@ -1,0 +1,80 @@
+body {
+  width: 400px;
+  height: 150px;
+  margin: 0px;
+  padding: 0px;
+}
+
+#cont {
+  display: flex;
+  flex-direction: column;
+}
+
+#head {
+  width: 100%;
+  height: fit-content;
+  padding: 8px;
+  text-align: left;
+  background-color: #f33;
+  box-sizing: border-box;
+  color: white;
+}
+
+#body {
+  flex-grow: 1;
+  width: 400px;
+  box-sizing: border-box;
+  height: calc(150px - 2.5rem - 16px);
+  padding-left: 32px;
+}
+
+.text {
+  font-size: 1rem;
+  line-height: 1rem;
+  height: 1rem;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+@import "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.6/dist/web/variable/pretendardvariable.css";
+@font-face {
+  font-family: LINESeedKR-Bd;
+  src: url(https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_11-01@1.0/LINESeedKR-Bd.woff2)
+    format("woff2");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: LINESeedKR-Rg;
+  src: url(https://cdn.jsdelivr.net/gh/wizfile/font/LINESeedKR-Rg.eot);
+  src: url(https://cdn.jsdelivr.net/gh/wizfile/font/LINESeedKR-Rg.woff)
+    format("woff");
+  font-style: normal;
+}
+
+@font-face {
+  font-family: LINESeedKR-Th;
+  src: url(https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_11-01@1.0/LINESeedKR-Th.woff2)
+    format("woff2");
+  font-weight: 700;
+  font-style: normal;
+}
+
+body {
+  font-family: Pretendard Variable, Pretendard, -apple-system,
+    BlinkMacSystemFont, system-ui, Roboto, Helvetica Neue, Segoe UI,
+    Apple SD Gothic Neo, Noto Sans KR, Malgun Gothic, "Apple Color Emoji",
+    "Segoe UI Emoji", Segoe UI Symbol, sans-serif;
+}
+
+h1,
+h2 {
+  font-family: LINESeedKR-Rg;
+}
+
+h1 {
+  font-size: 2rem;
+  font-weight: bold;
+}

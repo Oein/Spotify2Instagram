@@ -12,6 +12,7 @@ declare global {
     axios: typeof axios;
     html2canvas: (element: HTMLElement | null) => Promise<any>;
     givePlayData: () => void;
+    al: (a: string, b: string) => void;
   }
 }
 

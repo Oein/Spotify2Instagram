@@ -20,6 +20,10 @@ const errDir = join(appData, "errors");
 const config = join(appData, "config.env");
 const listenTime = join(appData, "listens");
 
+let token = "";
+let code = "";
+let refresh = "";
+
 console.log("IMG DIR", imgDir);
 console.log("ERR DIR", errDir);
 console.log("CONFIG", config);
@@ -72,31 +76,62 @@ if (!process.env.SP_SECRET_KEY)
     text: [`Env "SP_SECRET_KEY" is empty`, `Env Path : ${config}`].join("\n"),
   };
 
-const writeErr = (err: Error | string) => {
-  writeFileSync(
-    join(errDir, new Date().getTime().toString() + ".error.txt"),
-    [`========== ${new Date().toString()} ==========`, `${err}`].join("\n")
-  );
-  openErrWin("Nodejs Error", err.toString());
+const spotifyQuery = {
+  client_id: process.env.SP_CLIENT_ID,
+  redirect_uri: "sptoinsta://oauth",
+  scope: "user-read-currently-playing",
+  response_type: "code",
+  show_dialog: "true",
 };
 
-const openErrWin = (title: string, text: string) => {
-  return new Promise(() => {
-    let win = new BrowserWindow({
+const multiplyString = (str: string, times: number) => {
+  let out = "";
+  while (times) {
+    out += String;
+    times--;
+  }
+  return out;
+};
+
+const writeErr = (
+  err: Error | string,
+  errName = "Nodejs Error",
+  closeErr = true
+) => {
+  writeFileSync(
+    join(errDir, new Date().getTime().toString() + ".error.txt"),
+    [
+      `========== ${new Date().toString()} ==========`,
+      ` - Title / ${errName}`,
+      multiplyString(
+        "=",
+        `========== ${new Date().toString()} ==========`.length
+      ),
+      `${err}`,
+    ].join("\n")
+  );
+  openErrWin(errName, err.toString(), closeErr);
+};
+
+const openErrWin = (title: string, text: string, closeErr = true) => {
+  return new Promise<void>((resolve) => {
+    let errWin = new BrowserWindow({
       width: 400,
       height: 200,
       title: "Error Window",
     });
 
-    win.loadFile("static/error.html");
-    win.webContents.addListener("dom-ready", () => {
-      win.webContents.executeJavaScript(
+    errWin.loadFile("./build/static/error.html");
+    errWin.webContents.addListener("dom-ready", () => {
+      errWin.webContents.executeJavaScript(
         `al(${JSON.stringify(title)}, ${JSON.stringify(text)})`
       );
     });
-    win.on("close", () => {
-      process.exit();
-    });
+    if (closeErr)
+      errWin.on("close", () => {
+        process.exit();
+      });
+    else resolve();
   });
 };
 
@@ -123,6 +158,8 @@ async function login() {
   }
 }
 
+let win: BrowserWindow | null = null;
+
 const createWindow = async () => {
   await login();
   let win = new BrowserWindow({
@@ -133,19 +170,10 @@ const createWindow = async () => {
     },
     title: "Main window",
   });
-  var set = {
-    client_id: process.env.SP_CLIENT_ID,
-    redirect_uri: "sptoinsta://oauth",
-    scope: "user-read-currently-playing",
-    response_type: "code",
-    show_dialog: "true",
-  };
-  var url = "https://accounts.spotify.com/authorize?" + urlEncodeSet(set);
-  win.loadURL(url);
 
-  var token = "";
-  var code = "";
-  var refresh = "";
+  let url =
+    "https://accounts.spotify.com/authorize?" + urlEncodeSet(spotifyQuery);
+  win.loadURL(url);
 
   win.webContents.on("will-navigate", function (event: any, newUrl: string) {
     event.preventDefault();
@@ -169,7 +197,7 @@ const createWindow = async () => {
         token = v.data.access_token;
         refresh = v.data.refresh_token;
 
-        win.loadFile("static/index.html");
+        win.loadFile("./build/static/index.html");
         win.webContents.addListener("dom-ready", () => {
           win.webContents.executeJavaScript('handleAuth("' + token + '")');
           win.webContents.executeJavaScript(
@@ -182,7 +210,56 @@ const createWindow = async () => {
       });
     return;
   });
+};
 
+function urlEncodeSet(set: any) {
+  let comps = [];
+  for (let i in set) {
+    if (set.hasOwnProperty(i)) {
+      comps.push(encodeURIComponent(i) + "=" + encodeURIComponent(set[i]));
+    }
+  }
+  let string = comps.join("&");
+  return string;
+}
+
+app.whenReady().then(async () => {
+  if (shownErr.title.length || shownErr.text.length)
+    await openErrWin(shownErr.title, shownErr.text);
+  createWindow();
+  ipcMain.handle("focus", () => {
+    BrowserWindow.getAllWindows()
+      .filter(
+        (win) =>
+          win.webContents.getTitle() == "Play data viewer" ||
+          win.webContents.getTitle() == ""
+      )[0]
+      .focus();
+  });
+  ipcMain.handle("refresh", async (e, old) => {
+    if (win == null) return;
+    axios({
+      url: "https://accounts.spotify.com/api/token",
+      headers: {
+        Authorization: serverAuth,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      method: "POST",
+      data: {
+        grant_type: "refresh_token",
+        refresh_token: refresh,
+      },
+    })
+      .then((v) => {
+        console.log(v.data);
+        token = v.data.access_token;
+        if (win != null)
+          win.webContents.executeJavaScript('handleAuth("' + token + '")');
+      })
+      .catch((err) => {
+        writeErr(err);
+      });
+  });
   ipcMain.handle("music", async (e, data) => {
     const { img, url, tit, aut } = data;
     const b64 = Buffer.from(encodeURIComponent(url), "base64").toString(
@@ -207,15 +284,17 @@ const createWindow = async () => {
           })
           .then(() => {
             rmSync(iurl);
-            win.webContents.executeJavaScript(
-              `alertToTheBottom("Successfully uploaded to instagram.",4000)`
-            );
+            if (win != null)
+              win.webContents.executeJavaScript(
+                `alertToTheBottom("Successfully uploaded to instagram.",4000)`
+              );
           })
           .catch((err) => {
             writeErr(err);
-            win.webContents.executeJavaScript(
-              `alertToTheBottom("Failed to upload to instagram.",4000)`
-            );
+            if (win != null)
+              win.webContents.executeJavaScript(
+                `alertToTheBottom("Failed to upload to instagram.",4000)`
+              );
           });
       }
       oldData += 1;
@@ -233,53 +312,11 @@ const createWindow = async () => {
       }
     }
   });
-
-  ipcMain.handle("refresh", async (e, old) => {
-    axios({
-      url: "https://accounts.spotify.com/api/token",
-      headers: {
-        Authorization: serverAuth,
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      method: "POST",
-      data: {
-        grant_type: "refresh_token",
-        refresh_token: refresh,
-      },
-    })
-      .then((v) => {
-        console.log(v.data);
-        token = v.data.access_token;
-        win.webContents.executeJavaScript('handleAuth("' + token + '")');
-      })
-      .catch((err) => {
-        writeErr(err);
-      });
+  ipcMain.handle("err", (e, err) => {
+    writeErr(err, "Web Error", false);
   });
-};
-
-function urlEncodeSet(set: any) {
-  var comps = [];
-  for (var i in set) {
-    if (set.hasOwnProperty(i)) {
-      comps.push(encodeURIComponent(i) + "=" + encodeURIComponent(set[i]));
-    }
-  }
-  var string = comps.join("&");
-  return string;
-}
-
-app.whenReady().then(async () => {
-  if (shownErr.title.length || shownErr.text.length)
-    await openErrWin(shownErr.title, shownErr.text);
-  createWindow();
-  ipcMain.handle("focus", () => {
-    BrowserWindow.getAllWindows()
-      .filter(
-        (win) =>
-          win.webContents.getTitle() == "Play data viewer" ||
-          win.webContents.getTitle() == ""
-      )[0]
-      .focus();
+  ipcMain.handle("reauth", () => {
+    if (win) win.close();
+    createWindow();
   });
 });

@@ -11,6 +11,13 @@ var lastTokenGenerated: number | null = null;
 var playdatawin: null | Window = null;
 var lastData: LastData | null = null;
 
+function showReauth() {
+  (document.getElementById("resign") as HTMLButtonElement).style.top = "0px";
+}
+function hideReauth() {
+  (document.getElementById("resign") as HTMLButtonElement).style.top = "-100%";
+}
+
 function loadXHR(url: string) {
   return new Promise(function (resolve, reject) {
     try {
@@ -29,6 +36,9 @@ function loadXHR(url: string) {
       };
       xhr.send();
     } catch (err: any) {
+      showReauth();
+      console.error(err);
+      ipcRenderer.invoke("err", err.toString());
       reject(err.message);
     }
   });
@@ -114,7 +124,9 @@ function fetchWhatIsPlaying() {
       });
     })
     .catch((err) => {
+      showReauth();
       console.error(err);
+      ipcRenderer.invoke("err", err.toString());
     });
   return intervaler();
 }
@@ -139,7 +151,9 @@ function handleAuth(accessToken: string) {
       fetchWhatIsPlaying();
     })
     .catch((err) => {
+      showReauth();
       console.error(err);
+      ipcRenderer.invoke("err", err.toString());
     });
 }
 
@@ -213,5 +227,12 @@ window.givePlayData = () => {
       playdatawin = null;
     });
     window.ipcRenderer.invoke("focus");
+  }
+);
+
+(document.getElementById("resign") as HTMLButtonElement).addEventListener(
+  "click",
+  () => {
+    window.ipcRenderer.invoke("reauth");
   }
 );

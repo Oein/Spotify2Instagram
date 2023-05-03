@@ -1,12 +1,7 @@
 import { join } from "path";
 import { app } from "electron";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
-
-interface MusicData {
-  times: number;
-  id: string;
-  url: string;
-}
+import { MusicData } from "../@types/globals";
 
 const appData = join(
   app?.getPath("userData") ||
@@ -45,21 +40,24 @@ function setMusicArray() {
   listensArray = dt;
 }
 
-function toSortedArray(musicArray: { [key: string]: MusicData }) {
+export function toSortedArray() {
   let out: MusicData[] = [];
-  console.log(JSON.stringify(out));
+  Object.keys(listensArray).forEach((k) => {
+    out.push(listensArray[k]);
+  });
   out = out.sort((a, b) => {
     return b.times - a.times;
   });
+  console.log(out);
   return out;
 }
 
 setMusicArray();
 console.log(
   "==== Most listens ====\n" +
-    toSortedArray(listensArray)
+    toSortedArray()
       .slice(0, 10)
-      .map((j, i) => `${i}. ${j.id} / ${j.times}`)
+      .map((j, i) => `${i}. ${j.url} / ${j.times}`)
       .join("\n")
 );
 
@@ -85,7 +83,6 @@ export function addThisMonthCount(url: string) {
   if (fileMonth != new Date().getMonth()) resetThisMonthData();
   if (typeof listensArray[id] == "undefined")
     listensArray[id] = {
-      id: id,
       times: 0,
       url: url,
     };

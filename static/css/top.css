@@ -1,0 +1,155 @@
+@import "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.6/dist/web/variable/pretendardvariable.css";
+@font-face {
+  font-family: LINESeedKR-Bd;
+  src: url(https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_11-01@1.0/LINESeedKR-Bd.woff2)
+    format("woff2");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: LINESeedKR-Rg;
+  src: url(https://cdn.jsdelivr.net/gh/wizfile/font/LINESeedKR-Rg.eot);
+  src: url(https://cdn.jsdelivr.net/gh/wizfile/font/LINESeedKR-Rg.woff)
+    format("woff");
+  font-style: normal;
+}
+
+@font-face {
+  font-family: LINESeedKR-Th;
+  src: url(https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_11-01@1.0/LINESeedKR-Th.woff2)
+    format("woff2");
+  font-weight: lighter;
+  font-style: normal;
+}
+
+body {
+  font-family: Pretendard Variable, Pretendard, -apple-system,
+    BlinkMacSystemFont, system-ui, Roboto, Helvetica Neue, Segoe UI,
+    Apple SD Gothic Neo, Noto Sans KR, Malgun Gothic, "Apple Color Emoji",
+    "Segoe UI Emoji", Segoe UI Symbol, sans-serif;
+  margin: 0px;
+  padding: 0px;
+}
+
+* {
+  font-family: LINESeedKR-Rg;
+  margin: 0px;
+}
+
+#main {
+  width: 400px;
+  height: 400px;
+  background-color: white;
+  padding: 32px;
+}
+
+#cont {
+  background-color: white;
+  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+#hed {
+  font-weight: bold;
+  height: 3rem;
+  width: 100%;
+  text-align: center;
+  border-bottom: 1px solid rgb(219, 219, 219);
+}
+
+#tit {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  font-family: LINESeedKR-Bd;
+}
+
+#bod {
+  flex-grow: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+#body {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: content-box;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.m {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px solid #f3f3f3;
+  padding: 2px;
+}
+
+.m:last-child {
+  border-bottom: none;
+}
+
+.m > *,
+.dc {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.m > img {
+  width: 60px;
+  border-radius: 8px;
+}
+
+.d {
+  margin-left: 4px;
+}
+
+.dc > h1 {
+  font-size: 1.1rem;
+}
+
+.dc > h2 {
+  font-size: 0.75rem;
+  color: #aaa;
+}
+
+#ddd {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 1rem;
+}
+
+#ddd > span {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  margin-right: 0.4rem;
+}
+
+#ddd > span:nth-child(1) {
+  background-color: #ff605c;
+}
+
+#ddd > span:nth-child(2) {
+  background-color: #ffbd44;
+}
+
+#ddd > span:nth-child(3) {
+  background-color: #00ca4e;
+}

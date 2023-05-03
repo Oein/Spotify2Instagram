@@ -1,9 +1,9 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, Menu } from "electron";
 import { join } from "path";
 import { existsSync, writeFileSync, mkdirSync, readFile, rmSync } from "fs";
 import { IgApiClient } from "instagram-private-api";
 import { promisify } from "util";
-import { addListenCount, getImgURL } from "./music";
+import { addListenCount, getImgURL, toSortedArray } from "./music";
 import axios from "axios";
 
 const readFileAsync = promisify(readFile);
@@ -143,14 +143,12 @@ async function login() {
     );
   } catch (err: any) {
     writeErr(err);
-    await openErrWin("Instagram Error", "Failed to signin.");
   }
 }
 
 let win: BrowserWindow | null = null;
 
 const createWindow = async () => {
-  await login();
   let win = new BrowserWindow({
     width: 460,
     height: 750,
@@ -212,9 +210,29 @@ function urlEncodeSet(set: any) {
   return string;
 }
 
+async function t5trakcs() {
+  let t5win = new BrowserWindow({
+    width: 464,
+    height: 500,
+    webPreferences: {
+      preload: join(__dirname, "preload.js"),
+    },
+    title: "Main window",
+  });
+
+  t5win.loadFile("./build/static/top.html");
+  t5win.webContents.addListener("dom-ready", () => {
+    t5win.webContents.executeJavaScript('handleAuth("' + token + '")');
+    t5win.webContents.executeJavaScript(
+      `setMusics(${JSON.stringify(toSortedArray().slice(0, 5))})`
+    );
+  });
+}
+
 app.whenReady().then(async () => {
   if (shownErr.title.length || shownErr.text.length)
     await openErrWin(shownErr.title, shownErr.text);
+  await login();
   createWindow();
   ipcMain.handle("focus", () => {
     BrowserWindow.getAllWindows()
@@ -294,3 +312,29 @@ app.whenReady().then(async () => {
     createWindow();
   });
 });
+
+const menu = Menu.buildFromTemplate([
+  { role: "appMenu" },
+  {
+    label: "Spotify2Instagram",
+    submenu: [
+      {
+        label: "Reauth",
+        click: () => {
+          win?.close();
+          createWindow();
+        },
+      },
+      {
+        label: "Show Top 5 Musics",
+        click: t5trakcs,
+      },
+    ],
+  },
+  { role: "fileMenu" },
+  { role: "editMenu" },
+  { role: "viewMenu" },
+  { role: "windowMenu" },
+]);
+
+Menu.setApplicationMenu(menu);

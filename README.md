@@ -35,8 +35,8 @@ Spotify developer dashboard is on [https://developer.spotify.com/dashboard](http
 
 # How to upgrade from `Top listens` not supported versions
 
-1. Replace `https3A2F2Fopenspotifycom2F` to `` in all files' names in your **Listen count** Directory
-2. Replace `https3A2F2Fopenspotifycom2F` to `` in all files' names in your **Images cache** Directory
+1. Replace `https3A2F2Fopenspotifycom2F` to `[Empty]` in all files' names in your **Listen count** Directory
+2. Replace `https3A2F2Fopenspotifycom2F` to `[Empty]` in all files' names in your **Images cache** Directory
 
 # Example env
 

@@ -108,6 +108,11 @@ body {
   transform: translateY(-50%);
 }
 
+.dc {
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .m > img {
   width: 60px;
   border-radius: 8px;
@@ -115,10 +120,17 @@ body {
 
 .d {
   margin-left: 4px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .dc > h1 {
   font-size: 1.1rem;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  box-sizing: border-box;
 }
 
 .dc > h2 {

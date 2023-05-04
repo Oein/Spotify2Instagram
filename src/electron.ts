@@ -3,7 +3,14 @@ import { join } from "path";
 import { existsSync, writeFileSync, mkdirSync, readFile, rmSync } from "fs";
 import { IgApiClient } from "instagram-private-api";
 import { promisify } from "util";
-import { addListenCount, getImgURL, toSortedArray } from "./music";
+import {
+  addListenCount,
+  getImgURL,
+  popList,
+  showMostListensToConsole,
+  toSortedArray,
+  uploadList,
+} from "./music";
 import axios from "axios";
 
 const readFileAsync = promisify(readFile);
@@ -211,6 +218,7 @@ function urlEncodeSet(set: any) {
 }
 
 async function t5trakcs() {
+  showMostListensToConsole();
   let t5win = new BrowserWindow({
     width: 464,
     height: 500,
@@ -282,14 +290,36 @@ app.whenReady().then(async () => {
       );
     }
 
-    if (addListenCount(url)) {
+    if (addListenCount(url, tit, aut)) {
+      let files: {
+        buf: Buffer;
+        str: string;
+      }[] = [];
+      let imgURLS: string[] = [];
+      console.log("Upload to instagram");
+      while (uploadList.length) {
+        let img = uploadList[0];
+        console.log("ALBUM", img);
+        imgURLS.push(img.imgURL);
+        files.push({
+          buf: await readFileAsync(img.imgURL),
+          str: img.message,
+        });
+        popList();
+      }
       ig.publish
-        .photo({
-          file: await readFileAsync(iurl),
-          caption: `Listen "${tit}" by "${aut}" on ${url}`,
+        .album({
+          items: files.map((f) => {
+            return {
+              file: f.buf,
+            };
+          }),
+          caption: files.map((f) => f.str).join("\n"),
         })
         .then(() => {
-          rmSync(iurl);
+          imgURLS.forEach((url) => {
+            rmSync(url);
+          });
           if (win != null)
             win.webContents.executeJavaScript(
               `alertToTheBottom("Successfully uploaded to instagram.",4000)`

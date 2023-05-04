@@ -12,14 +12,22 @@ const lastMonthFile = join(appData, "month");
 const lastYearFile = join(appData, "year");
 const listenTime = join(appData, "listens");
 const thisMonthListen = join(appData, "thisMonth.json");
+const uploadListenQueueFile = join(appData, "uploadList.txt");
 const count2upload = 5;
 
+interface UploadQueueItem {
+  message: string;
+  imgURL: string;
+}
+
+export let uploadList: UploadQueueItem[] = [];
 let fileMonth = -1;
 
 console.log("LAST MONTH", lastMonthFile);
 console.log("LAST YEAR", lastYearFile);
 console.log("GLOBAL LISTEN DIR", listenTime);
 console.log("MONTH LISTEN", thisMonthListen);
+console.log("UPLOAD QUEUE", uploadListenQueueFile);
 
 if (!existsSync(imgDir)) mkdirSync(imgDir, { recursive: true });
 if (!existsSync(listenTime)) mkdirSync(listenTime, { recursive: true });
@@ -28,8 +36,11 @@ if (!existsSync(lastMonthFile))
 if (!existsSync(lastYearFile))
   writeFileSync(lastYearFile, new Date().getFullYear().toString());
 if (!existsSync(thisMonthListen)) writeFileSync(thisMonthListen, "{}");
+if (!existsSync(uploadListenQueueFile))
+  writeFileSync(uploadListenQueueFile, "[]");
 
 fileMonth = parseInt(readFileSync(lastMonthFile).toString());
+uploadList = JSON.parse(readFileSync(uploadListenQueueFile).toString());
 
 let listensArray: { [key: string]: MusicData } = {};
 
@@ -40,6 +51,16 @@ function setMusicArray() {
   listensArray = dt;
 }
 
+function setList(li: UploadQueueItem[]) {
+  uploadList = li;
+  writeFileSync(uploadListenQueueFile, JSON.stringify(uploadList));
+}
+
+export function popList() {
+  uploadList.shift();
+  writeFileSync(uploadListenQueueFile, JSON.stringify(uploadList));
+}
+
 export function toSortedArray() {
   let out: MusicData[] = [];
   Object.keys(listensArray).forEach((k) => {
@@ -48,18 +69,18 @@ export function toSortedArray() {
   out = out.sort((a, b) => {
     return b.times - a.times;
   });
-  console.log(out);
   return out;
 }
 
-setMusicArray();
-console.log(
-  "==== Most listens ====\n" +
-    toSortedArray()
-      .slice(0, 10)
-      .map((j, i) => `${i}. ${j.url} / ${j.times}`)
-      .join("\n")
-);
+export function showMostListensToConsole() {
+  console.log(
+    "==== Most listens ====\n" +
+      toSortedArray()
+        .slice(0, 10)
+        .map((j, i) => `${i}. ${j.url} / ${j.times}`)
+        .join("\n")
+  );
+}
 
 export function url2id(url: string): string {
   return Buffer.from(encodeURIComponent(url), "base64")
@@ -90,7 +111,7 @@ export function addThisMonthCount(url: string) {
   writeFileSync(thisMonthListen, JSON.stringify(listensArray));
 }
 
-export function addListenCount(url: string): boolean {
+export function addListenCount(url: string, tit: string, aut: string): boolean {
   const furl = getGlobalListenFileURL(url);
   const exsi = existsSync(furl);
 
@@ -102,7 +123,16 @@ export function addListenCount(url: string): boolean {
     let oldData = parseInt(readFileSync(furl).toString());
     oldData += 1;
     writeFileSync(furl, oldData.toString());
-    return oldData == count2upload;
+    if (oldData == count2upload)
+      setList([
+        ...uploadList,
+        {
+          imgURL: getImgURL(url),
+          message: `Listen "${tit}" by "${aut}" on ${url}`,
+        },
+      ]);
+
+    return uploadList.length >= 5;
   } else {
     writeFileSync(furl, "1");
   }
@@ -113,3 +143,6 @@ export function addListenCount(url: string): boolean {
 export function getGlobalListenFileURL(url: string): string {
   return join(listenTime, url2id(url));
 }
+
+setMusicArray();
+showMostListensToConsole();

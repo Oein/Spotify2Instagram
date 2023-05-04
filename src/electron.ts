@@ -156,7 +156,7 @@ async function login() {
 let win: BrowserWindow | null = null;
 
 const createWindow = async () => {
-  let win = new BrowserWindow({
+  win = new BrowserWindow({
     width: 460,
     height: 750,
     webPreferences: {
@@ -191,10 +191,10 @@ const createWindow = async () => {
         token = v.data.access_token;
         refresh = v.data.refresh_token;
 
-        win.loadFile("./build/static/index.html");
-        win.webContents.addListener("dom-ready", () => {
-          win.webContents.executeJavaScript('handleAuth("' + token + '")');
-          win.webContents.executeJavaScript(
+        win!.loadFile("./build/static/index.html");
+        win!.webContents.addListener("dom-ready", () => {
+          win!.webContents.executeJavaScript('handleAuth("' + token + '")');
+          win!.webContents.executeJavaScript(
             `alertToTheBottom("Successfully refreshed your token")`
           );
         });
@@ -291,6 +291,10 @@ app.whenReady().then(async () => {
     }
 
     if (addListenCount(url, tit, aut)) {
+      win?.setClosable(false);
+      win?.webContents.executeJavaScript(
+        `alertToTheBottom("Started to upload to instagram.",4000)`
+      );
       let files: {
         buf: Buffer;
         str: string;
@@ -320,17 +324,18 @@ app.whenReady().then(async () => {
           imgURLS.forEach((url) => {
             rmSync(url);
           });
-          if (win != null)
-            win.webContents.executeJavaScript(
-              `alertToTheBottom("Successfully uploaded to instagram.",4000)`
-            );
+          win?.webContents.executeJavaScript(
+            `alertToTheBottom("Successfully uploaded to instagram.",4000)`
+          );
         })
         .catch((err) => {
           writeErr(err);
-          if (win != null)
-            win.webContents.executeJavaScript(
-              `alertToTheBottom("Failed to upload to instagram.",4000)`
-            );
+          win?.webContents.executeJavaScript(
+            `alertToTheBottom("Failed to upload to instagram.",4000)`
+          );
+        })
+        .finally(() => {
+          win?.setClosable(true);
         });
     }
   });

@@ -94,6 +94,15 @@ window.setMusics = async (musics: { times: number; url: string }[]) => {
     let albumURL = data["album"]["images"][0]["url"];
     rootElement.appendChild(await createRankElement(name, author, albumURL));
   }
+
+  setTimeout(() => {
+    window.html2canvas(document.getElementById("main")).then((canvas) => {
+      let dataUrl = canvas.toDataURL("image/jpeg");
+      window.ipcRenderer.invoke("topMusics", {
+        img: dataUrl,
+      });
+    });
+  }, 100);
 };
 
 window.handleAuth = (token: string) => {

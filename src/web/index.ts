@@ -3,6 +3,8 @@ interface LastData {
   a: string;
   i: string;
   p: number;
+  pls: number;
+  ens: number;
 }
 
 var token: string | null = null;
@@ -92,7 +94,6 @@ function fetchWhatIsPlaying() {
 
       (document.getElementById("title") as HTMLHeadingElement).innerText = name;
       (document.getElementById("artist") as HTMLSpanElement).innerText = author;
-
       lastData = {
         n: name,
         a: author,
@@ -101,13 +102,20 @@ function fetchWhatIsPlaying() {
           (parseInt(data["progress_ms"]) /
             parseInt(data["item"]["duration_ms"])) *
           100,
+        pls: parseInt(data["progress_ms"]),
+        ens: parseInt(data["item"]["duration_ms"]),
       };
 
       if (playdatawin) playdatawin.postMessage(lastData);
 
       loadXHR(data["item"]["album"]["images"][0]["url"]).then((blob: any) => {
         let blobUrl = window.URL.createObjectURL(blob);
+
         (document.getElementById("cover") as HTMLImageElement).src = blobUrl;
+        (
+          document.getElementById("musicdataContainer") as HTMLDivElement
+        ).style.backgroundImage = `url(${blobUrl})`;
+
         setTimeout(() => {
           window
             .html2canvas(document.getElementById("musicdataContainer"))
@@ -206,13 +214,6 @@ function alertToTheBottom(message = "test message", ms = 2000) {
   });
   if (messageQueue.length == 1) __al(messageQueue[0]);
 }
-
-setInterval(() => {
-  document.documentElement.style.setProperty(
-    "--percent",
-    `${Math.random() * 80 + 10}%`
-  );
-}, 5000);
 
 window.givePlayData = () => {
   if (playdatawin && lastData != null) playdatawin.postMessage(lastData);

@@ -85,28 +85,49 @@ h1 {
 }
 
 #cover {
-  width: 140px;
-  height: 140px;
+  width: 100px;
+  height: 100px;
   border-radius: 8px;
 }
 
 #musicdataContainer {
-  background-color: black;
+  background: black;
   color: white;
   width: 400px;
   height: 400px;
   margin-left: 0px !important;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 200%;
+  box-sizing: border-box;
+}
+
+#blur {
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(9px);
   padding: 4px;
+  box-sizing: border-box;
 }
 
 #musicdata {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
+  align-items: flex-start;
   justify-content: center;
   position: relative;
   top: 50%;
-  transform: translateY(-50%);
+  left: 50%;
+  width: 350px;
+  transform: translate(-50%, -50%);
+  padding: 0.7rem;
+  background: none;
+  background-color: rgba(0, 0, 0, 0.1);
+  backdrop-filter: opacity(0.1);
+  padding: 4px;
+  box-sizing: border-box;
+  border-radius: 6px;
 }
 
 #title {
@@ -115,28 +136,40 @@ h1 {
   overflow: hidden;
   white-space: nowrap;
   width: 80%;
-  text-align: center;
+  text-align: start;
   font-size: 1.25rem;
 }
 
 #musictextinfo {
-  text-align: center;
+  text-align: start;
   margin-top: 16px;
   width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
+  flex-grow: 1;
+  overflow: hidden;
 }
 
 #artistContainer {
-  color: #aaa;
+  color: #c6c6c6;
   font-size: 0.75em;
+  width: 75%;
+  display: flex;
+  flex-direction: row;
+  column-gap: 4px;
 }
 
 #artist {
+  margin: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-weight: bold;
-  text-align: center;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+  display: block;
 }
 #musicController {
   margin-top: 16px;
@@ -145,38 +178,6 @@ h1 {
   align-items: center;
   display: flex;
   flex-direction: column;
-}
-
-#slider {
-  width: 80%;
-  height: 3px;
-  background: #555;
-  border-radius: 1.5px;
-}
-
-#sliderEnabled {
-  width: var(--percent);
-  background: #ccc;
-  height: 3px;
-  border-radius: 1.5px;
-  transition: all 0.2s;
-}
-
-#sliderNow {
-  position: relative;
-  left: var(--percent);
-  top: 0px;
-  height: 7px;
-  width: 7px;
-  display: block;
-  background: white;
-  transform: translateY(-5px);
-  border-radius: 50%;
-  transition: all 0.2s;
-}
-
-#control {
-  width: 80%;
 }
 
 #openwin {

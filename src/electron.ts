@@ -22,6 +22,7 @@ const config = join(appData, "config.env");
 let token = "";
 let code = "";
 let refresh = "";
+let gonnaClose = false;
 
 console.log("ERR DIR", errDir);
 console.log("CONFIG", config);
@@ -94,6 +95,7 @@ const writeErr = (
   errName = "Nodejs Error",
   closeErr = true
 ) => {
+  console.error(err);
   writeFileSync(
     join(errDir, new Date().getTime().toString() + ".error.txt"),
     [
@@ -110,6 +112,7 @@ const writeErr = (
 };
 
 const openErrWin = (title: string, text: string, closeErr = true) => {
+  gonnaClose = gonnaClose || closeErr;
   return new Promise<void>((resolve) => {
     let errWin = new BrowserWindow({
       width: 400,
@@ -252,7 +255,6 @@ app.whenReady().then(async () => {
       .focus();
   });
   ipcMain.handle("refresh", async (e, old) => {
-    if (win == null) return;
     axios({
       url: "https://accounts.spotify.com/api/token",
       headers: {
@@ -268,8 +270,7 @@ app.whenReady().then(async () => {
       .then((v) => {
         console.log(v.data);
         token = v.data.access_token;
-        if (win != null)
-          win.webContents.executeJavaScript('handleAuth("' + token + '")');
+        win?.webContents.executeJavaScript('handleAuth("' + token + '")');
       })
       .catch((err) => {
         writeErr(err);
@@ -290,6 +291,10 @@ app.whenReady().then(async () => {
       );
     }
 
+    if (gonnaClose) {
+      console.log("IGNORE", url);
+      return;
+    }
     if (addListenCount(url, tit, aut)) {
       win?.setClosable(false);
       win?.webContents.executeJavaScript(
@@ -343,7 +348,7 @@ app.whenReady().then(async () => {
     writeErr(err, "Web Error", false);
   });
   ipcMain.handle("reauth", () => {
-    if (win) win.close();
+    win?.close();
     createWindow();
   });
 });

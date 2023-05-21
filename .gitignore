@@ -7,3 +7,4 @@ node_modules
 distTS
 staticDist
 build
+config.env

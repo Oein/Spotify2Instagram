@@ -3,7 +3,6 @@ import GulpUglify from "gulp-uglify";
 import ts from "gulp-typescript";
 import csso from "gulp-csso";
 import htmlmin from "gulp-htmlmin";
-import imagemin from "gulp-imagemin";
 const tsProject = ts.createProject("tsconfig.json");
 
 const routes = {
@@ -38,14 +37,8 @@ const htmls = () =>
     )
     .pipe(gulp.dest("./build/static"));
 
-const images = () =>
-  gulp
-    .src("./static/resources/*")
-    .pipe(imagemin())
-    .pipe(gulp.dest("./build/static/resources"));
-
 export const type = gulp.series([typescript]);
 export const css = gulp.series([styles]);
 export const html = gulp.series([htmls]);
-export const img = gulp.series([images]);
-export const build = gulp.series([typescript, styles, htmls, images]);
+export const web = gulp.series([html, css]);
+export const build = gulp.series([typescript, styles, htmls]);

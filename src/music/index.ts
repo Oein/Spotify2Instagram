@@ -8,6 +8,7 @@ const appData = join(
     "/Users/dev/Library/Application Support/Spotify2Instagram"
 );
 const imgDir = join(appData, "imgs");
+const topImgs = join(appData, "topImgs");
 const lastMonthFile = join(appData, "month");
 const lastYearFile = join(appData, "year");
 const listenTime = join(appData, "listens");
@@ -31,6 +32,7 @@ console.log("UPLOAD QUEUE", uploadListenQueueFile);
 
 if (!existsSync(imgDir)) mkdirSync(imgDir, { recursive: true });
 if (!existsSync(listenTime)) mkdirSync(listenTime, { recursive: true });
+if (!existsSync(topImgs)) mkdirSync(topImgs, { recursive: true });
 if (!existsSync(lastMonthFile))
   writeFileSync(lastMonthFile, new Date().getMonth().toString());
 if (!existsSync(lastYearFile))
@@ -142,6 +144,16 @@ export function addListenCount(url: string, tit: string, aut: string): boolean {
 
 export function getGlobalListenFileURL(url: string): string {
   return join(listenTime, url2id(url));
+}
+
+export function topimgurl() {
+  let now = new Date();
+  return join(
+    topImgs,
+    `MOST LISTENED MUSIC - ${now.getFullYear()}_${
+      now.getMonth() + 1
+    }_${now.getDate()} - ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}.jpg`
+  );
 }
 
 setMusicArray();

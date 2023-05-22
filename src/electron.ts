@@ -8,6 +8,7 @@ import {
   getImgURL,
   popList,
   showMostListensToConsole,
+  topimgurl,
   toSortedArray,
   uploadList,
 } from "./music";
@@ -350,6 +351,13 @@ app.whenReady().then(async () => {
   ipcMain.handle("reauth", () => {
     win?.close();
     createWindow();
+  });
+  ipcMain.handle("topMusics", (e, data) => {
+    const { img } = data;
+    const furl = topimgurl();
+    writeFileSync(furl, img.replace(/^data:image\/jpeg;base64,/, ""), "base64");
+    win?.webContents.executeJavaScript(`alertToTheBottom("Saved M.L.M")`);
+    win?.webContents.executeJavaScript(`alertToTheBottom("To ${furl}")`);
   });
 });
 

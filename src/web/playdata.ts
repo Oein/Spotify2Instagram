@@ -9,6 +9,7 @@ function toms(ms: number) {
 
 let pls = 0;
 let ens = 0;
+let ply = false;
 
 function fetchNum() {
   (document.getElementById("now") as HTMLHeadingElement).innerText = toms(pls);
@@ -29,6 +30,8 @@ window.addEventListener(
   "message",
   (event) => {
     let dt = event.data;
+    if (dt["pl"] == false) return (ply = false);
+    ply = true;
     pls = dt["pls"];
     ens = dt["ens"];
     fetdt(dt["n"], dt["a"], dt["i"], dt["p"]);
@@ -39,7 +42,7 @@ window.addEventListener(
 window.addEventListener("DOMContentLoaded", () => {
   window.opener.eval("givePlayData()");
   setInterval(() => {
-    pls = Math.min(pls + 500, ens);
+    if (ply) pls = Math.min(pls + 500, ens);
     fetchNum();
   }, 500);
 });

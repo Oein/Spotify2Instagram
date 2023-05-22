@@ -5,6 +5,7 @@ interface LastData {
   p: number;
   pls: number;
   ens: number;
+  pl: boolean;
 }
 
 var token: string | null = null;
@@ -80,6 +81,9 @@ function fetchWhatIsPlaying() {
       if (data == null || data == "" || !data["is_playing"]) {
         nPlaying.style.display = "block";
         mContainer.style.display = "none";
+        playdatawin?.postMessage({
+          pl: false,
+        });
         return;
       }
 
@@ -109,9 +113,10 @@ function fetchWhatIsPlaying() {
           100,
         pls: parseInt(data["progress_ms"]),
         ens: parseInt(data["item"]["duration_ms"]),
+        pl: false,
       };
 
-      if (playdatawin) playdatawin.postMessage(lastData);
+      playdatawin?.postMessage(lastData);
 
       loadXHR(data["item"]["album"]["images"][0]["url"]).then((blob: any) => {
         let blobUrl = window.URL.createObjectURL(blob);

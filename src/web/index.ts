@@ -12,6 +12,11 @@ var lastMusicURL: string | null = null;
 var lastTokenGenerated: number | null = null;
 var playdatawin: null | Window = null;
 var lastData: LastData | null = null;
+var ctx = (document.getElementById("covbg") as HTMLCanvasElement).getContext(
+  "2d"
+)!;
+
+ctx.filter = "blur(7px)";
 
 function showReauth() {
   (document.getElementById("resign") as HTMLButtonElement).style.top = "0px";
@@ -112,9 +117,19 @@ function fetchWhatIsPlaying() {
         let blobUrl = window.URL.createObjectURL(blob);
 
         (document.getElementById("cover") as HTMLImageElement).src = blobUrl;
-        (
-          document.getElementById("musicdataContainer") as HTMLDivElement
-        ).style.backgroundImage = `url(${blobUrl})`;
+
+        var imgObj = new Image(1080, 1080);
+        imgObj.src = blobUrl;
+        imgObj.onload = () => {
+          var scaled = 1.5;
+          ctx.drawImage(
+            imgObj,
+            ((1080 * (scaled - 1)) / 2) * -1,
+            ((1080 * (scaled - 1)) / 2) * -1,
+            1080 * scaled,
+            1080 * scaled
+          );
+        };
 
         setTimeout(() => {
           window

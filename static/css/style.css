@@ -96,9 +96,6 @@ h1 {
   width: 400px;
   height: 400px;
   margin-left: 0px !important;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 200%;
   box-sizing: border-box;
 }
 
@@ -107,7 +104,6 @@ h1 {
   height: 100%;
   background: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(9px);
-  padding: 4px;
   box-sizing: border-box;
 }
 
@@ -117,10 +113,9 @@ h1 {
   align-items: flex-start;
   justify-content: center;
   position: relative;
-  top: 50%;
   left: 50%;
   width: 350px;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, calc(-50% - 200px));
   padding: 0.7rem;
   background: none;
   background-color: rgba(0, 0, 0, 0.1);
@@ -153,7 +148,7 @@ h1 {
 }
 
 #artistContainer {
-  color: #c6c6c6;
+  color: #f2f2f2e3;
   font-size: 0.75em;
   width: 75%;
   display: flex;

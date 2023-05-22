@@ -118,7 +118,7 @@ h1 {
   transform: translate(-50%, calc(-50% - 200px));
   padding: 0.7rem;
   background: none;
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.3);
   backdrop-filter: opacity(0.1);
   padding: 4px;
   box-sizing: border-box;

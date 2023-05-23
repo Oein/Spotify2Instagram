@@ -110,8 +110,11 @@ function fetchWhatIsPlaying() {
         n: name,
         a: author,
         i: data["item"]["album"]["images"][0]["url"],
-        pls: parseInt(data["progress_ms"]),
-        ens: parseInt(data["item"]["duration_ms"]),
+        pls: data["progress_ms"] ? parseInt(data["progress_ms"]) : 0,
+        ens:
+          data["item"] && data["item"]["duration_ms"]
+            ? parseInt(data["item"]["duration_ms"])
+            : 0,
         pl: 1,
       };
 

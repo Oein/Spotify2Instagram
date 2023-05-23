@@ -83,9 +83,10 @@ function fetchWhatIsPlaying() {
           pls: data["progress_ms"]
             ? parseInt(data["progress_ms"])
             : lastData?.pls || 0,
-          ens: data["item"]["duration_ms"]
-            ? parseInt(data["item"]["duration_ms"])
-            : lastData?.ens || 0,
+          ens:
+            data["item"] && data["item"]["duration_ms"]
+              ? parseInt(data["item"]["duration_ms"])
+              : lastData?.ens || 0,
         });
         return;
       }
@@ -166,7 +167,7 @@ function fetchWhatIsPlaying() {
     })
     .catch((err) => {
       showReauth();
-      console.error(err);
+      console.error(err.stack);
       ipcRenderer.invoke("err", err.toString());
     });
   return intervaler();

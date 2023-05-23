@@ -16,8 +16,6 @@ var ctx = (document.getElementById("covbg") as HTMLCanvasElement).getContext(
   "2d"
 )!;
 
-ctx.filter = "blur(7px)";
-
 function showReauth() {
   (document.getElementById("resign") as HTMLButtonElement).style.top = "0px";
 }
@@ -128,6 +126,7 @@ function fetchWhatIsPlaying() {
         imgObj.src = blobUrl;
         imgObj.onload = () => {
           var scaled = 1.5;
+          ctx.filter = "blur(7px)";
           ctx.drawImage(
             imgObj,
             ((1080 * (scaled - 1)) / 2) * -1,
@@ -135,21 +134,31 @@ function fetchWhatIsPlaying() {
             1080 * scaled,
             1080 * scaled
           );
-        };
 
-        setTimeout(() => {
-          window
-            .html2canvas(document.getElementById("musicdataContainer"))
-            .then((canvas) => {
-              let dataUrl = canvas.toDataURL("image/jpeg");
-              window.ipcRenderer.invoke("music", {
-                img: dataUrl,
-                tit: name,
-                aut: author,
-                url: musicUrl,
+          ctx.filter = "blur(0px)";
+          const height = 1080 / 2.5;
+          var grd = ctx.createLinearGradient(0, 1080 - height, 0, 1080);
+          grd.addColorStop(0, "rgba(0, 0, 0, 0)");
+          grd.addColorStop(1, "rgba(0, 0, 0, 0.8)");
+
+          // Fill with gradient
+          ctx.fillStyle = grd;
+          ctx.fillRect(0, 1080 - height, 1080, height);
+
+          setTimeout(() => {
+            window
+              .html2canvas(document.getElementById("musicdataContainer"))
+              .then((canvas) => {
+                let dataUrl = canvas.toDataURL("image/jpeg");
+                window.ipcRenderer.invoke("music", {
+                  img: dataUrl,
+                  tit: name,
+                  aut: author,
+                  url: musicUrl,
+                });
               });
-            });
-        }, 100);
+          }, 100);
+        };
       });
     })
     .catch((err) => {

@@ -278,6 +278,10 @@ app.whenReady().then(async () => {
       });
   });
   ipcMain.handle("music", async (e, data) => {
+    if (process.env.N2I === "true") {
+      console.log("IGNORE music by N2I");
+      return;
+    }
     const { img, url, tit, aut } = data;
 
     const iurl = getImgURL(url);

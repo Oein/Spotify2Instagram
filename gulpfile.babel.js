@@ -23,6 +23,9 @@ const typescript = () =>
     )
     .pipe(gulp.dest(routes.typescript.dest));
 
+const imgcp = () =>
+  gulp.src("./static/imgs/*.png").pipe(gulp.dest("./build/static/imgs"));
+
 const styles = () =>
   gulp.src("./static/css/*").pipe(csso()).pipe(gulp.dest("./build/static/css"));
 
@@ -41,4 +44,5 @@ export const type = gulp.series([typescript]);
 export const css = gulp.series([styles]);
 export const html = gulp.series([htmls]);
 export const web = gulp.series([html, css]);
-export const build = gulp.series([typescript, styles, htmls]);
+export const img = gulp.series([imgcp]);
+export const build = gulp.series([typescript, styles, htmls, imgcp]);

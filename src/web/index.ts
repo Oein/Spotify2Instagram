@@ -2,10 +2,9 @@ interface LastData {
   n: string;
   a: string;
   i: string;
-  p: number;
+  pl: number;
   pls: number;
   ens: number;
-  pl: boolean;
 }
 
 var token: string | null = null;
@@ -82,7 +81,13 @@ function fetchWhatIsPlaying() {
         nPlaying.style.display = "block";
         mContainer.style.display = "none";
         playdatawin?.postMessage({
-          pl: false,
+          pl: 0,
+          pls: data["progress_ms"]
+            ? parseInt(data["progress_ms"])
+            : lastData?.pls || 0,
+          ens: data["item"]["duration_ms"]
+            ? parseInt(data["item"]["duration_ms"])
+            : lastData?.ens || 0,
         });
         return;
       }
@@ -107,13 +112,9 @@ function fetchWhatIsPlaying() {
         n: name,
         a: author,
         i: data["item"]["album"]["images"][0]["url"],
-        p:
-          (parseInt(data["progress_ms"]) /
-            parseInt(data["item"]["duration_ms"])) *
-          100,
         pls: parseInt(data["progress_ms"]),
         ens: parseInt(data["item"]["duration_ms"]),
-        pl: false,
+        pl: 1,
       };
 
       playdatawin?.postMessage(lastData);

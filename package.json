@@ -1,6 +1,6 @@
 {
   "name": "Spotify2Instagram",
-  "version": "1.0.0",
+  "version": "3.1.0",
   "main": "build/electron.js",
   "author": "Oein <oein0219@gmail.com>",
   "license": "MIT",
